@@ -271,9 +271,12 @@
             <label for="gfnmsLayer" style='color:#E2007F'>GFNMS</label>
             <input id="greenpeaceLayer" type="checkbox" value="greenpeaceLayer" checked>
             <label for="greenpeaceLayer" style='color:#0F6001'>Greenpeace</label>
+            <input id="mbnmsLayer" type="checkbox" value="mbnmsLayer" checked>
+            <label for="mbnmsLayer" style='color:#E9BD02'>MBNMS</label>
             <input id="mciLayer" type="checkbox" value="mciLayer" checked>
             <label for="mciLayer" style='color:#650B0B'>MCI</label>
-        </div>
+            <input id="noneLayer" type="checkbox" value="noneLayer" checked>
+            <label for="noneLayer" style='color:#0F97A3'>None</label>        </div>
 
         <div id='ui-controls'>
             <button value="Zoom" id="zoom">Zoom to Selection</button>
@@ -341,7 +344,7 @@
     <script>
         // instantiate the Leaflet map
         var options = {
-            center: [41, -123.5],
+            center: [41, -121.2],
             zoom: 6,
             dragging: true,
             zoomControl: true
@@ -392,14 +395,21 @@
                     proposer: "Greenpeace",
                     color: "#0F6001"
                 },
-                //                mbnmsLayer: {
-                //                    proposer: "MBNMS",
-                //                    color: "#E9BD02"
-                //                },
+                mbnmsLayer: {
+                    proposer: "MBNMS",
+                    color: "#E9BD02"
+                },
                 mciLayer: {
                     proposer: "MCI",
                     color: "#650B0B"
                 },
+                noneLayer: {
+                    proposer: "None",
+                    color: "#0F97A3",
+                    //color: "#0D8792",
+                    //color: "#228E9C",
+                    //color: "#0B7983",
+                },            
             }
             //
 
@@ -693,48 +703,24 @@
             html += "<br>" + "<b>Action: </b>" + data.RegAction;
             html += "<br>" + "<b>Proposer: </b>" + data.Proposer;
             html += "<br>" + "<b>Area (sq mi): </b>" + sqm2sqmi(data.SiteAreaM2);
-            html += "<br>" + "<b>Hard Substrate: </b>" +
-                (data.hard / data.SiteAreaM2).toLocaleString(undefined, {
-                    style: 'percent'
-                });
-            html += "<br>" + "<b>Mixed Substrate: </b>" +
-                (data.mixed / data.SiteAreaM2).toLocaleString(undefined, {
-                    style: 'percent'
-                });
-            html += "<br>" + "<b>Soft Substrate: </b>" +
-                (data.soft / data.SiteAreaM2).toLocaleString(undefined, {
-                    style: 'percent'
-                });
-            html += "<br>" + "<b>Unknown Substrate: </b>" +
-                (data.unknown / data.SiteAreaM2).toLocaleString(undefined, {
-                    style: 'percent'
-                });
+            html += "<br>" + "<b>Hard Substrate: </b>" + pct(data.hard, data.SiteAreaM2);
+            html += "<br>" + "<b>Mixed Substrate: </b>" + pct(data.mixed, data.SiteAreaM2);
+            html += "<br>" + "<b>Soft Substrate: </b>" + pct(data.soft, data.SiteAreaM2);
+            html += "<br>" + "<b>Unknown Substrate: </b>" + pct(data.unknown, data.SiteAreaM2);
+            html += "<br>" + "<b>Canyons & Gullys: </b>" + pct(data.CynAreaM2, data.SiteAreaM2);
+            html += "<br>" + "<b>Seamounts: </b>" + pct(data.SmtAreaM2, data.SiteAreaM2);
+            html += "<br>" + "<b>Corals & Sponges</b> (1x1 km blocks): " + data.corspg_cnt;
+            html += "<br>" + "<b>Highest 20% Overfished Predicted Spp: </b> " + pct(data.OF20AreaM2, data.SiteAreaM2);
 
-            if (data.CynAreaM2) {
-                html += "<br>" + "<b>Canyons and Gullys: </b>" +
-                    (data.CynAreaM2 / data.SiteAreaM2).toLocaleString(undefined, {
-                        style: 'percent'
-                    });
+            if (data.VesCount >= 3 || data.VesCount == 0) {
+                html += "<br>" + "<b>Trawl Tow Length (mi): </b>" + m2mi(data.TowLenM);
+                html += "<br>" + "<b>Total Catch (MT): </b> " + rnd(data.Total_MT,1);
+                html += "<br>" + "<b>Total Ex-Vessel Value: </b> " + dollars(data.Total_Rev);
             } else {
-                html += "<br>" + "<b>Canyons and Gullys: </b>  0%";
-            }
-
-            if (data.SmtAreaM2) {
-                html += "<br>" + "<b>Seamounts: </b>" +
-                    (data.SmtAreaM2 / data.SiteAreaM2).toLocaleString(undefined, {
-                        style: 'percent'
-                    });
-            } else {
-                html += "<br>" + "<b>Seamounts: </b> 0%";
-            }
-
-            html += "<br>" + "<b>Invertebrates</b> (1x1 km blocks): " + data.CntCorSpg;
-
-            if (data.VesCountLB >= 3) {
-                html += "<br>" + "<b>Trawl Tow Length (mi): </b>" + m2mi(data.TowLenMLB);
-            } else {
-                html += "<br>" + "<b>Trawl Tow Length:</b> Unavailable";
-            }
+                html += "<br>" + "<b>Trawl Tow Length: </b> **";
+                html += "<br>" + "<b>Total Catch (MT): </b> **";
+                html += "<br>" + "<b>Total Ex-Vessel Value: </b> **";
+            }     
 
             // Assign the html content to the info box using JQuery selector
             $(".poly-info").html(html);
@@ -811,6 +797,23 @@
                 });
             }
         }
+        
+        // Round and Format to specified number of decimals
+        function rnd(val, digits){
+            return val.toLocaleString(undefined, {
+                maximumFractionDigits: digits,
+                minimumFractionDigits: digits,
+            })
+        }
+        
+        // Round to even thousands of dollars
+        function dollars(val){
+            return val.toLocaleString(undefined, {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0
+            }) + "K"
+        }
 
         function buildSummary() {
 
@@ -825,7 +828,7 @@
                 rows = '';
 
             // Create empty table structure
-            rows += '<tr><th>Environmental Metrics</th>' + '<th>Closed</th>' + '<th>Reopened</th>' + '<th>Net</th></tr>' +
+            rows += '<tr><th>Environmental Metrics</th>' + '<th>Close</th>' + '<th>Open</th>' + '<th>Net</th></tr>' +
                 '<tr><td>Area (sq mi)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
                 '<tr><th>Physical Habitat</th>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
                 '<tr><td>Hard</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
@@ -839,11 +842,21 @@
                 '<tr><td>Invertebrates (1 km blocks)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
                 '<tr><td>Highest 20% Predicted Spp Occurrence</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
                 '<tr><td></td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
-                '<tr><th>Socioeconomic Metrics</th>' + '<th>Displaced</th>' + '<th>Restored</th>' + '<th>Net</th></tr>' +
+                '<tr><th>Socioeconomic Metrics</th>' + '<th>Displace</th>' + '<th>Restore</th>' + '<th>Net</th></tr>' +
                 '<tr><td>Total Tow Length (mi)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
-                '<tr><td>Catch</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
-                '<tr><td>Ex-Vessel Value</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>';
-
+                '<tr><th>Total Catch (Metric Tons)</th>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+                '<tr><td>Flatfish (MT)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+                '<tr><td>Rockfish (MT)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+                '<tr><td>Roundfish (MT)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+                '<tr><td>Sharks & Skates (MT)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+                '<tr><td>Other (MT)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+                '<tr><th>Total Ex-Vessel Value (Thousands of $)</th>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+                '<tr><td>Flatfish ($1K)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+                '<tr><td>Rockfish ($1K)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+                '<tr><td>Roundfish ($1K)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+                '<tr><td>Sharks & Skates ($1K)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+                '<tr><td>Other ($1K)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>';
+                    
             // update the html of the table
             $table.html(rows);
 
@@ -861,8 +874,21 @@
                 "unknown",
                 "CynAreaM2",
                 "SmtAreaM2",
-                "CntCorSpg",
-                "TowLenMLB",
+                "corspg_cnt",
+                "OF20AreaM2",
+                "TowLenM",
+                "Total_MT",
+                "Flatfish_MT",
+                "Rockfish_MT",
+                "Roundfish_MT",
+                "SharkSkate_MT",
+                "Other_MT",
+                "Total_Rev",
+                "Flatfish_Rev",
+                "Rockfish_Rev",
+                "Roundfish_Rev",
+                "SharkSkate_Rev",
+                "Other_Rev",               
             ]
 
 
@@ -877,8 +903,21 @@
                 unknown: 0,
                 CynAreaM2: 0,
                 SmtAreaM2: 0,
-                CntCorSpg: 0,
-                TowLenMLB: 0
+                corspg_cnt: 0,
+                OF20AreaM2: 0,
+                TowLenM: 0,
+                Total_MT: 0,
+                Flatfish_MT: 0,
+                Rockfish_MT: 0,
+                Roundfish_MT: 0,
+                SharkSkate_MT: 0,
+                Other_MT: 0,
+                Total_Rev: 0,
+                Flatfish_Rev: 0,
+                Rockfish_Rev: 0,
+                Roundfish_Rev: 0,
+                SharkSkate_Rev: 0,
+                Other_Rev: 0    
             };
             var summClose = {
                 SiteAreaM2: 0,
@@ -888,8 +927,22 @@
                 unknown: 0,
                 CynAreaM2: 0,
                 SmtAreaM2: 0,
-                CntCorSpg: 0,
-                TowLenMLB: 0
+                corspg_cnt: 0,
+                TowLenM: 0,
+                OF20AreaM2: 0,
+                TowLenM: 0,
+                Total_MT: 0,
+                Flatfish_MT: 0,
+                Rockfish_MT: 0,
+                Roundfish_MT: 0,
+                SharkSkate_MT: 0,
+                Other_MT: 0,
+                Total_Rev: 0,
+                Flatfish_Rev: 0,
+                Rockfish_Rev: 0,
+                Roundfish_Rev: 0,
+                SharkSkate_Rev: 0,
+                Other_Rev: 0    
             };
 
             // loop through all the selected features
@@ -927,11 +980,11 @@
             // Update area count text
             var polyCount = selectedSet.length;
 
+            // Activate or de-activate zoom and clear buttons depending on presence of selection
             if (polyCount == 0) {
                 $('#zoom').removeClass('available');
                 $('#clear').removeClass('available');
             } else {
-
                 $('#zoom').addClass('available');
                 $('#clear').addClass('available');
             }
@@ -956,7 +1009,7 @@
             var areaNet = areaClose - areaOpen;
 
             // Populate the table
-            rows += '<tr><th>Environmental Metrics</th>' + '<th>Closed</th>' + '<th>Reopened</th>' + '<th>Net</th></tr>' +
+            rows += '<tr><th>Environmental Metrics</th>' + '<th>Close</th>' + '<th>Open</th>' + '<th>Net</th></tr>' +
                 '<tr><td>Area (sq mi)</td>' + '<td>' + sqm2sqmi(areaClose) + '</td>' +
                 '<td>' + sqm2sqmi(areaOpen) + '</td>' +
                 '<td>' + sqm2sqmi(areaNet) + '</td></tr>' +
@@ -983,18 +1036,53 @@
                 '<tr><td>Seamounts</td>' + '<td>' + pct(summClose.SmtAreaM2, areaClose) + '</td>' +
                 '<td>' + pct(summOpen.SmtAreaM2, areaOpen) + '</td>' +
                 '<td>' + pct(calcNet(summClose.SmtAreaM2, summOpen.SmtAreaM2), areaNet) + '</td></tr>' +
-                '<tr><td>Invertebrates (1 km blocks)</td>' + '<td>' + summClose.CntCorSpg + '</td>' +
-                '<td>' + summOpen.CntCorSpg + '</td>' +
-                '<td>' + calcNet(summClose.CntCorSpg, summOpen.CntCorSpg) + '</td></tr>' +
-                '<tr><td>Highest 20% Predicted Spp Occurrence</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
-                '<tr><td></td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
-                '<tr><th>Socioeconomic Metrics</th><th>Displaced</th><th>Restored</th><th>Net</th></tr>' +
-                '<tr><td>Total Tow Length (mi)</td>' + '<td>' + m2mi(summClose.TowLenMLB) + '</td>' +
-                '<td>' + m2mi(summOpen.TowLenMLB) + '</td>' +
-                '<td>' + m2mi(calcNet(summClose.TowLenMLB, summOpen.TowLenMLB)) + '</td></tr>' +
-                '<tr><td>Catch</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
-                '<tr><td>Ex-Vessel Value</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>';
-
+                '<tr><td>Corals & Sponges (1 km blocks)</td>' + '<td>' + summClose.corspg_cnt + '</td>' +
+                '<td>' + summOpen.corspg_cnt + '</td>' +
+                '<td>' + calcNet(summClose.corspg_cnt, summOpen.corspg_cnt) + '</td></tr>' +
+                '<tr><td>Highest 20% Predicted Spp Occurrence</td>' + '<td>' + pct(summClose.OF20AreaM2, areaClose) + '</td>' +
+                '<td>' + pct(summOpen.OF20AreaM2, areaOpen) + '</td>' +
+                '<td>' + pct(calcNet(summClose.OF20AreaM2, summOpen.OF20AreaM2), areaNet) + '</td></tr>' +
+                '<tr><th>Socioeconomic Metrics</th><th>Displace</th><th>Restore</th><th>Net</th></tr>' +
+                '<tr><td>Total Tow Length (mi)</td>' + '<td>' + m2mi(summClose.TowLenM) + '</td>' +
+                '<td>' + m2mi(summOpen.TowLenM) + '</td>' +
+                '<td>' + m2mi(calcNet(summClose.TowLenM, summOpen.TowLenM)) + '</td></tr>' +
+                '<tr><th>Total Catch (Metric Tons)</th>' + '<td>' + rnd(summClose.Total_MT, 1) + '</td>' + 
+                '<td>' + rnd(summOpen.Total_MT, 1) + '</td>' + 
+                '<td>' + rnd(calcNet(summClose.Total_MT,summOpen.Total_MT), 1) + '</td></tr>' +
+                '<tr><td>Flatfish (MT)</td>' + '<td>' + rnd(summClose.Flatfish_MT, 1) + '</td>' + 
+                '<td>' + rnd(summOpen.Flatfish_MT, 1) + '</td>' + 
+                '<td>' + rnd(calcNet(summClose.Flatfish_MT,summOpen.Flatfish_MT), 1) + '</td></tr>' +
+                '<tr><td>Rockfish (MT)</td>'  + '<td>' + rnd(summClose.Rockfish_MT, 1) + '</td>' + 
+                '<td>' + rnd(summOpen.Rockfish_MT, 1) + '</td>' + 
+                '<td>' + rnd(calcNet(summClose.Rockfish_MT,summOpen.Rockfish_MT), 1) + '</td></tr>' +
+                '<tr><td>Roundfish (MT)</td>'  + '<td>' + rnd(summClose.Roundfish_MT, 1) + '</td>' + 
+                '<td>' + rnd(summOpen.Roundfish_MT, 1) + '</td>' + 
+                '<td>' + rnd(calcNet(summClose.Roundfish_MT,summOpen.Roundfish_MT), 1) + '</td></tr>' +
+                '<tr><td>Sharks & Skates (MT)</td>'  + '<td>' + rnd(summClose.SharkSkate_MT, 1) + '</td>' + 
+                '<td>' + rnd(summOpen.SharkSkate_MT, 1) + '</td>' + 
+                '<td>' + rnd(calcNet(summClose.SharkSkate_MT,summOpen.SharkSkate_MT), 1) + '</td></tr>' +
+                '<tr><td>Other (MT)</td>' + '<td>' + rnd(summClose.Other_MT, 1) + '</td>' + 
+                '<td>' + rnd(summOpen.Other_MT, 1) + '</td>' + 
+                '<td>' + rnd(calcNet(summClose.Other_MT,summOpen.Other_MT), 1) + '</td></tr>' +
+                '<tr><th>Total Ex-Vessel Value (Thousands of $)</th>' + '<td>' + dollars(summClose.Total_Rev) + '</td>' + 
+                '<td>' + dollars(summOpen.Total_Rev) + '</td>' + 
+                '<td>' + dollars(calcNet(summClose.Total_Rev,summOpen.Total_Rev)) + '</td></tr>' +
+                '<tr><td>Flatfish ($1K)</td>' + '<td>' + dollars(summClose.Flatfish_Rev) + '</td>' + 
+                '<td>' + dollars(summOpen.Flatfish_Rev) + '</td>' + 
+                '<td>' + dollars(calcNet(summClose.Flatfish_Rev,summOpen.Flatfish_Rev)) + '</td></tr>' +
+                '<tr><td>Rockfish ($1K)</td>'  + '<td>' + dollars(summClose.Rockfish_Rev) + '</td>' + 
+                '<td>' + dollars(summOpen.Rockfish_Rev) + '</td>' + 
+                '<td>' + dollars(calcNet(summClose.Rockfish_Rev,summOpen.Rockfish_Rev)) + '</td></tr>' +
+                '<tr><td>Roundfish ($1K)</td>'  + '<td>' + dollars(summClose.Roundfish_Rev) + '</td>' + 
+                '<td>' + dollars(summOpen.Roundfish_Rev) + '</td>' + 
+                '<td>' + dollars(calcNet(summClose.Roundfish_Rev,summOpen.Roundfish_Rev)) + '</td></tr>' +
+                '<tr><td>Sharks & Skates ($1K)</td>'  + '<td>' + dollars(summClose.SharkSkate_Rev) + '</td>' + 
+                '<td>' + dollars(summOpen.SharkSkate_Rev) + '</td>' + 
+                '<td>' + dollars(calcNet(summClose.SharkSkate_Rev,summOpen.SharkSkate_Rev)) + '</td></tr>' +
+                '<tr><td>Other ($1K)</td>' + '<td>' + dollars(summClose.Other_Rev) + '</td>' + 
+                '<td>' + dollars(summOpen.Other_Rev) + '</td>' + 
+                '<td>' + dollars(calcNet(summClose.Other_Rev,summOpen.Other_Rev)) + '</td></tr>';
+            
             // update the html of the table
             $table.html(rows);
 
@@ -1033,11 +1121,23 @@
                 '<th>Mixed</th>' +
                 '<th>Soft</th>' +
                 '<th>Unknown</th>' +
-                '<th>Canyons and Gullies</th>' +
+                '<th>Canyons & Gullies</th>' +
                 '<th>Seamounts</th>' +
                 '<th>Corals & Sponges (1 km blocks)</th>' +
-                '<th>Highest 20% Predicted Spp</th>' +
+                '<th>Highest 20% Predicted OF Spp</th>' +
                 '<th>Trawl Tow Length (mi)</th>' +
+                '<th>Total Catch (MT)</th>' +
+                '<th>Flatfish Catch (MT)</th>' +
+                '<th>Rockfish Catch (MT)</th>' +
+                '<th>Roundfish Catch (MT)</th>' +
+                '<th>Sharks & Skates Catch (MT)</th>' +
+                '<th>Other Catch (MT)</th>' +
+                '<th>Total Ex-Vessel Value</th>' +
+                '<th>Flatfish Ex-Vessel Value</th>' +
+                '<th>Rockfish Ex-Vessel Value</th>' +
+                '<th>Roundfish Ex-Vessel Value</th>' +
+                '<th>Sharks & Skates Ex-Vessel Value</th>' +
+                '<th>Other Catch Ex-Vessel Value</th>' +                
                 '</tr>'
 
             // update the html of the table
@@ -1073,8 +1173,20 @@
                 '<th>Canyons and Gullies</th>' +
                 '<th>Seamounts</th>' +
                 '<th>Corals & Sponges (1 km blocks)</th>' +
-                '<th>Highest 20% Predicted Spp</th>' +
-                '<th>Trawl Tow Length (mi)</th>' +
+                '<th>Highest 20% Predicted OF Spp</th>' +
+                '<th>Trawl Tow Length (mi)</th>' +                
+                '<th>Total Catch (MT)</th>' +
+                '<th>Flatfish Catch (MT)</th>' +
+                '<th>Rockfish Catch (MT)</th>' +
+                '<th>Roundfish Catch (MT)</th>' +
+                '<th>Sharks & Skates Catch (MT)</th>' +
+                '<th>Other Catch (MT)</th>' +
+                '<th>Total Ex-Vessel Value</th>' +
+                '<th>Flatfish Ex-Vessel Value</th>' +
+                '<th>Rockfish Ex-Vessel Value</th>' +
+                '<th>Roundfish Ex-Vessel Value</th>' +
+                '<th>Sharks & Skates Ex-Vessel Value</th>' +
+                '<th>Other Catch Ex-Vessel Value</th>' + 
                 '</tr>'
 
             // loop through all the selected features
@@ -1084,10 +1196,11 @@
 
                 // Tow Length filter (< 3 vessels in an area)
                 var towLen;
-                if (data.VesCountLB >= 3) {
-                    towLen = m2mi(data.TowLenMLB);
+                if (data.VesCount >= 3 || data.VesCount == 0) {
+                    towLen = m2mi(data.TowLenM);
+                    
                 } else {
-                    towLen = "unavailable";
+                    towLen = "**";
                 }
 
 
@@ -1102,10 +1215,41 @@
                     '<td>' + pct(data.unknown, data.SiteAreaM2) + '</td>' +
                     '<td>' + pct(data.CynAreaM2, data.SiteAreaM2) + '</td>' +
                     '<td>' + pct(data.SmtAreaM2, data.SiteAreaM2) + '</td>' +
-                    '<td>' + data.CntCorSpg + '</td>' +
-                    '<td> X% </td>' +
-                    '<td>' + towLen + '</td>' +
-                    '</tr>'
+                    '<td>' + data.corspg_cnt + '</td>' +
+                    '<td>' + pct(data.OF20AreaM2, data.SiteAreaM2) + '</td>'                
+                
+                if (data.VesCount >= 3 || data.VesCount == 0) {
+                    rows += '<td>' + m2mi(data.TowLenM) + '</td>' +
+                    '<td>' + rnd(data.Total_MT, 1) + '</td>' +
+                    '<td>' + rnd(data.Flatfish_MT, 1) + '</td>' +
+                    '<td>' + rnd(data.Rockfish_MT, 1) + '</td>' +
+                    '<td>' + rnd(data.Roundfish_MT, 1) + '</td>' +
+                    '<td>' + rnd(data.SharkSkate_MT, 1) + '</td>' +
+                    '<td>' + rnd(data.Other_MT, 1) + '</td>' +
+                    '<td>' + dollars(data.Total_Rev) + '</td>' +
+                    '<td>' + dollars(data.Flatfish_Rev) + '</td>' +
+                    '<td>' + dollars(data.Rockfish_Rev) + '</td>' +
+                    '<td>' + dollars(data.Roundfish_Rev) + '</td>' +
+                    '<td>' + dollars(data.SharkSkate_Rev) + '</td>' +
+                    '<td>' + dollars(data.Other_Rev) + '</td>'
+                } else {
+                    rows += '<td>' + '**' + '</td>' +
+                    '<td>' + '**' + '</td>' +
+                    '<td>' + '**' + '</td>' +
+                    '<td>' + '**' + '</td>' +
+                    '<td>' + '**' + '</td>' +
+                    '<td>' + '**' + '</td>' +
+                    '<td>' + '**' + '</td>' +
+                    '<td>' + '**' + '</td>' +
+                    '<td>' + '**' + '</td>' +
+                    '<td>' + '**' + '</td>' +
+                    '<td>' + '**' + '</td>' +
+                    '<td>' + '**' + '</td>' +
+                    '<td>' + '**' + '</td>'
+                }
+                
+                
+                rows += '</tr>'
             });
 
 
@@ -1128,6 +1272,7 @@
             });
 
         })();
+        
     </script>
 
 </body>
