@@ -26,7 +26,9 @@
 
     <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500,600' rel='stylesheet' type='text/css'>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<!--    <script src="https://use.fontawesome.com/dbb89f5a68.js"></script>-->
+    <link rel="stylesheet" href="fonts/font-awesome-4.6.3/css/font-awesome.min.css">
 
     <!-- custom css -->
     <link href="css/site.css" rel="stylesheet">
@@ -41,21 +43,21 @@
         <h2>EFH Proposals</h2>
         <div id="layer-controls">
             <input id="collabLayer" type="checkbox" value="collabLayer" checked>
-            <label for="collabLayer" style='color:#E5571D'>Collaborative <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
+            <label for="collabLayer" style='color:#E5571D'><span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> Collaborative <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
             <input id="onoLayer" type="checkbox" value="onoLayer" checked>
-            <label for="onoLayer" style='color:#6F067B'>Oceana-NRDC-OC <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
+            <label for="onoLayer" style='color:#6F067B'><span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> Oceana et al. <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
             <input id="fmaLayer" type="checkbox" value="fmaLayer" checked>
-            <label for="fmaLayer" id="fmaLayer" style='color:#377EB8'>FMA <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
+            <label for="fmaLayer" id="fmaLayer" style='color:#377EB8'><span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> FMA <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
             <input id="gfnmsLayer" type="checkbox" value="gfnmsLayer" checked>
-            <label for="gfnmsLayer" style='color:#E2007F'>GFNMS <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
+            <label for="gfnmsLayer" style='color:#E2007F'><span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> GFNMS <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
             <input id="greenpeaceLayer" type="checkbox" value="greenpeaceLayer" checked>
-            <label for="greenpeaceLayer" style='color:#0F6001'>Greenpeace <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
+            <label for="greenpeaceLayer" style='color:#0F6001'><span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> Greenpeace <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
             <input id="mbnmsLayer" type="checkbox" value="mbnmsLayer" checked>
-            <label for="mbnmsLayer" style='color:#E9BD02'>MBNMS <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
+            <label for="mbnmsLayer" style='color:#E9BD02'><span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> MBNMS <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
             <input id="mciLayer" type="checkbox" value="mciLayer" checked>
-            <label for="mciLayer" style='color:#650B0B'>MCI <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
+            <label for="mciLayer" style='color:#650B0B'><span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> MCI <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
             <input id="noneLayer" type="checkbox" value="noneLayer" checked>
-            <label for="noneLayer" style='color:#0F97A3'>None <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
+            <label for="noneLayer" style='color:#0F97A3'><span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> None <button class="layer-select-all">all</button><button class="layer-unselect-all">unsel</button></label>
         </div>
 
         <div id='ui-controls'>
@@ -142,7 +144,7 @@
         
         // Add home button - zooms to full extent when clicked
         // Button downloaded from Open Iconic  https://useiconic.com/open/
-        L.easyButton('<img src="css/images/home-2x.png">', function(btn, map){
+        L.easyButton('fa-home', function(btn, map){
             map.setView([41, -121.2]);
             map.setZoom(6);
         }).addTo(map);
@@ -236,6 +238,174 @@
             geoJsonLayers[lyr].startStyle = styles
 
         } // end of loop through all geoJSON layers
+        
+        // Supplemental Layer styles
+        var depLineWeight = 2;
+        var depOpacity = 1;
+        
+        var latStyles = {
+            color: "black",
+            weight: 1,
+            opacity: depOpacity
+        }      
+        var dep30Styles = {
+            color: "#006400",
+            weight: depLineWeight,
+            opacity: depOpacity
+        }       
+        var dep100Styles = {
+            color: "#eead0e",
+            weight: depLineWeight,
+            opacity: depOpacity
+        }
+        var dep150Styles = {
+            color: "#8b2500",
+            weight: depLineWeight,
+            opacity: depOpacity
+        }        
+        var dep700Styles = {
+            color: "#104e8b",
+            weight: depLineWeight,
+            opacity: depOpacity
+        }  
+        var tribalUAStyles = {
+            color: "#594600",
+            weight: 2,
+            opacity: 1
+        } 
+        var eezStyles = {
+            fillColor: "#7f7f7f",
+//            stroke: false,
+            fillOpacity: 0.3,
+            color: "black",
+            weight: 1,
+            opacity: 0.8            
+        }
+        
+        var eezLnStyles = {
+            color: "#7f7f7f",
+            weight: 1,
+            opacity: 1
+        }
+        
+        var stateStyles = {
+            color: "#7f7f7f",
+            weight: 1,
+            opacity: 1
+        }
+        
+        sources = {
+            "eez": "data/eez_py.geojson",
+            "eez_ln": "data/eez_ln.geojson",
+            "lat": "data/strata_lat.geojson",
+            "dep30fm": "data/rca_30fm.geojson",
+            "dep100fm": "data/rca_100fm.geojson",
+            "dep150fm": "data/rca_150fm.geojson",
+            "dep700fm": "data/efh_700fm.geojson", 
+            "tribalUA_ln": "data/tribalUA_ln.geojson",
+            "state_ln": "data/state_ln.geojson"
+        }
+        
+        styles = {
+            "eez": eezStyles,
+            "eez_ln": eezLnStyles,
+            "lat": latStyles,
+            "dep30fm": dep30Styles,
+            "dep100fm": dep100Styles,
+            "dep150fm": dep150Styles,
+            "dep700fm": dep700Styles,
+            "tribalUA_ln": tribalUAStyles,
+            "state_ln": stateStyles,
+        }
+       
+        var data = {}; // object to hold JSON data for each layer
+        var layers = {}; // object to hold Leaflet GeoJSON layers
+        
+        // 
+        $.when(
+                $.getJSON(sources["eez_ln"], function(d) {
+                    data["eez_ln"] =  d;
+                }),
+                $.getJSON(sources["state_ln"], function(d) {
+                    data["state_ln"] =  d;
+                }),
+                $.getJSON(sources["lat"], function(d) {
+                    data["lat"] =  d;
+                }),
+                 $.getJSON(sources["dep30fm"], function(d) {
+                    data["dep30fm"] =  d;
+                }),
+                 $.getJSON(sources["dep100fm"], function(d) {
+                    data["dep100fm"] =  d;
+                }),
+                 $.getJSON(sources["dep150fm"], function(d) {
+                    data["dep150fm"] =  d;
+                }),
+                 $.getJSON(sources["dep700fm"], function(d) {
+                    data["dep700fm"] =  d;
+                }),
+                  $.getJSON(sources["tribalUA_ln"], function(d) {
+                    data["tribalUA_ln"] =  d;
+                })  
+            
+        ).then(function() {
+
+            // send complete data object to another function to create layers, etc.
+            drawMap(data);
+            
+            // Draw legend with Leaflet GeoJSON layers
+            drawSwitcher(layers);
+
+        });
+        
+
+        // Use the GeoJSON input data to create Leaflet GeoJSON layers for map
+        function drawMap(data){
+            
+            for (k in data){ // loop through each input source data layer
+                    
+                // Create Leaflet GeoJSON layer with source GeoJSON data
+                var layer = L.geoJson(data[k], {
+                    style: function (feature) {  // style for each GeoJSON feature
+                        return styles[k]
+                    }
+                })
+                // Initial state of all layers is off. 
+                // layer.addTo(map);
+                
+                layers[k] = layer;
+                
+            } // end loop for all source data layers
+            
+            // Add specific layers to draw on initial load here, if desired
+            layers["tribalUA_ln"].addTo(map);
+
+                        
+        } // end drawMap()
+  
+        
+        function drawSwitcher(layers){
+            
+            // Layer Switcher   
+            // Not sure how the order is determined.  Seems to vary.
+            // Doesn't seem to matter if it is called from $.when/.then, or from drawMap() function
+            
+            var layerLabels = {
+                "<b style='color:#7f7f7f'>EEZ</b>": layers["eez_ln"],
+                "<b style='color:#7f7f7f'>State Waters</b>": layers["state_ln"],
+                "<b style='color:black'>Latitude Breaks</b>": layers["lat"],
+                "<b style='color:#006400'>30 fathoms</b>": layers["dep30fm"],
+                "<b style='color:#eead0e'>100 fathoms</b>": layers["dep100fm"],
+                "<b style='color:#8b2500'>150 fathoms</b>": layers["dep150fm"],
+                "<b style='color:#104e8b'>700 fathoms</b>": layers["dep700fm"],
+                "<b style='color:#594600'>Tribal U&A</b>": layers["tribalUA_ln"],
+            }
+
+            var switcher = L.control.layers(null, layerLabels, {
+                collapsed: true});
+            switcher.addTo(map); 
+ 
+        } // end drawSwitcher()
 
 
         // Select or unselect feature depending on its current state
@@ -538,9 +708,12 @@
             $('#layer-controls input').change(function () {
 
                 var targetLayer = $(this).val();
+                var icon = $('label[for='+targetLayer+']').find('.fa');
                 if (this.checked) {
+                    icon.removeClass('fa-square-o').addClass('fa-check-square-o');
                     map.addLayer(geoJsonLayers[targetLayer]);
                 } else {
+                    icon.removeClass('fa-check-square-o').addClass('fa-square-o');
                     map.removeLayer(geoJsonLayers[targetLayer]);
                 }
 
