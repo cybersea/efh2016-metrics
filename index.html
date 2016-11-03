@@ -23,6 +23,8 @@
     <script src="js/turf.min.js"></script>
     <script src="js/jquery.tabletoCSV.js"></script>
     <script src="js/easy-button.js"></script>
+    <script src="js/typeahead.bundle.min.js"></script>
+    
 
     <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500,600' rel='stylesheet' type='text/css'>
@@ -41,115 +43,120 @@
         
         <!-- HTML form for user to select EFH proposal to draw on map -->
         <!-- Note that values correspond exactly to attribute names in source GeoJSON data file -->
+        <!-- Only Collaborative and Ocean proposals initially visible -->
         <h2>EFH Proposals</h2>
+
+        <div id='poly-search'>
+            <i class="fa fa-search"></i>
+            <input class="typeahead" type="text" placeholder="Search by name ...">
+        </div>
+
         <div id="layer-controls">
             <!-- Collaborative -->
             <input id="collabLayer" type="checkbox" value="collabLayer" checked>
-            <label for="collabLayer" style='color:#E5571D'>
-                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> 
-                Collaborative 
-                <button class="layer-unselect-all">
-                    <span class="tooltip" data-tooltip="Remove Proposal from Selection"><i class="fa fa-minus-square-o"></i></span>
+            <label for="collabLayer" style='color:#E5571D' data-nice-name="Collaborative">
+                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o layer-selection-icon"></i></span> 
+                Collaborative <span class="layer-counter"><span class="layer-counter-current">0</span>/59</span>
+                <button class="layer-unselect-all tooltip" data-tooltip="Remove Proposal from Selection">
+                    <i class="fa fa-minus"></i>
                 </button>
-                <button class="layer-select-all">
-                    <span class="tooltip" data-tooltip="Add Proposal to Selection"><i class="fa fa-plus-square-o"></i></span>
+                <button class="layer-select-all tooltip" data-tooltip="Add Proposal to Selection">
+                    <i class="fa fa-plus"></i>
                 </button>
             </label>
             <!-- Oceana -->
             <input id="onoLayer" type="checkbox" value="onoLayer" checked>
-            <label for="onoLayer" style='color:#6F067B'>
-                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> 
-                Oceana et al. 
-                <button class="layer-unselect-all">
-                    <span class="tooltip" data-tooltip="Remove Proposal from Selection"><i class="fa fa-minus-square-o"></i></span>
+            <label for="onoLayer" style='color:#6F067B' data-nice-name="Oceana-NRDC-OC">
+                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o layer-selection-icon"></i></span> 
+                Oceana et al. <span class="layer-counter"><span class="layer-counter-current">0</span>/68</span>
+                <button class="layer-unselect-all tooltip" data-tooltip="Remove Proposal from Selection">
+                    <i class="fa fa-minus"></i>
                 </button>
-                <button class="layer-select-all">
-                    <span class="tooltip" data-tooltip="Add Proposal to Selection"><i class="fa fa-plus-square-o"></i></span>
+                <button class="layer-select-all tooltip" data-tooltip="Add Proposal to Selection">
+                    <i class="fa fa-plus"></i>
                 </button>
             </label>
             <!-- Fishermans Marketing Association -->
-            <input id="fmaLayer" type="checkbox" value="fmaLayer" checked>
-            <label for="fmaLayer" id="fmaLayer" style='color:#377EB8'>
-                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> 
-                FMA 
-                <button class="layer-unselect-all">
-                    <span class="tooltip" data-tooltip="Remove Proposal from Selection"><i class="fa fa-minus-square-o"></i></span>
+            <input id="fmaLayer" type="checkbox" value="fmaLayer" unchecked>
+            <label for="fmaLayer" id="fmaLayer" style='color:#377EB8' data-nice-name="FMA">
+                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-square-o layer-selection-icon"></i></span> 
+                FMA <span class="layer-counter"><span class="layer-counter-current">0</span>/1</span>
+                <button class="layer-unselect-all tooltip" data-tooltip="Remove Proposal from Selection" disabled = "true">
+                    <i class="fa fa-minus"></i>  
                 </button>
-                <button class="layer-select-all">
-                    <span class="tooltip" data-tooltip="Add Proposal to Selection"><i class="fa fa-plus-square-o"></i></span>
+                <button class="layer-select-all tooltip" data-tooltip="Add Proposal to Selection" disabled = "true">
+                    <i class="fa fa-plus"></i>
                 </button>
             </label>
             <!-- Farallones National Marine Sanctuary -->
-            <input id="gfnmsLayer" type="checkbox" value="gfnmsLayer" checked>
-            <label for="gfnmsLayer" style='color:#E2007F'>
-                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> 
-                GFNMS 
-                <button class="layer-unselect-all">
-                    <span class="tooltip" data-tooltip="Remove Proposal from Selection"><i class="fa fa-minus-square-o"></i></span>
+            <input id="gfnmsLayer" type="checkbox" value="gfnmsLayer" unchecked>
+            <label for="gfnmsLayer" style='color:#E2007F' data-nice-name="GFNMS">
+                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-square-o layer-selection-icon"></i></span> 
+                GFNMS <span class="layer-counter"><span class="layer-counter-current">0</span>/3</span>
+                <button class="layer-unselect-all tooltip" data-tooltip="Remove Proposal from Selection" disabled = "true">
+                    <i class="fa fa-minus"></i>
                 </button>
-                <button class="layer-select-all">
-                    <span class="tooltip" data-tooltip="Add Proposal to Selection"><i class="fa fa-plus-square-o"></i></span>
+                <button class="layer-select-all tooltip" data-tooltip="Add Proposal to Selection" disabled = "true">
+                    <i class="fa fa-plus"></i>
                 </button>
             </label>
             <!-- Greenpeace -->
-            <input id="greenpeaceLayer" type="checkbox" value="greenpeaceLayer" checked>
-            <label for="greenpeaceLayer" style='color:#0F6001'>
-                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> 
-                Greenpeace 
-                <button class="layer-unselect-all">
-                    <span class="tooltip" data-tooltip="Remove Proposal from Selection"><i class="fa fa-minus-square-o"></i></span>
+            <input id="greenpeaceLayer" type="checkbox" value="greenpeaceLayer" unchecked>
+            <label for="greenpeaceLayer" style='color:#0F6001' data-nice-name="Greenpeace">
+                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-square-o layer-selection-icon"></i></span> 
+                Greenpeace <span class="layer-counter"><span class="layer-counter-current">0</span>/9</span>
+                <button class="layer-unselect-all tooltip" data-tooltip="Remove Proposal from Selection" disabled = "true">
+                    <i class="fa fa-minus"></i>
                 </button>
-                <button class="layer-select-all">
-                    <span class="tooltip" data-tooltip="Add Proposal to Selection"><i class="fa fa-plus-square-o"></i></span>
+                <button class="layer-select-all tooltip" data-tooltip="Add Proposal to Selection" disabled = "true">
+                    <i class="fa fa-plus"></i>
                 </button>
             </label>
             <!-- Monterey Bay National Marine Sanctuary -->
-            <input id="mbnmsLayer" type="checkbox" value="mbnmsLayer" checked>
-            <label for="mbnmsLayer" style='color:#E9BD02'>
-                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> 
-                MBNMS 
-                <button class="layer-unselect-all">
-                    <span class="tooltip" data-tooltip="Remove Proposal from Selection"><i class="fa fa-minus-square-o"></i></span>
+            <input id="mbnmsLayer" type="checkbox" value="mbnmsLayer" unchecked>
+            <label for="mbnmsLayer" style='color:#E9BD02' data-nice-name="MBNMS">
+                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-square-o layer-selection-icon"></i></span> 
+                MBNMS <span class="layer-counter"><span class="layer-counter-current">0</span>/15</span>
+                <button class="layer-unselect-all tooltip" data-tooltip="Remove Proposal from Selection" disabled = "true">
+                    <i class="fa fa-minus"></i>
                 </button>
-                <button class="layer-select-all">
-                    <span class="tooltip" data-tooltip="Add Proposal to Selection"><i class="fa fa-plus-square-o"></i></span>
+                <button class="layer-select-all tooltip" data-tooltip="Add Proposal to Selection" disabled = "true">
+                    <i class="fa fa-plus"></i>
                 </button>
             </label>
             <!-- Marine Conservation Institute -->
-            <input id="mciLayer" type="checkbox" value="mciLayer" checked>
-            <label for="mciLayer" style='color:#650B0B'>
-                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> 
-                MCI 
-                <button class="layer-unselect-all">
-                    <span class="tooltip" data-tooltip="Remove Proposal from Selection"><i class="fa fa-minus-square-o"></i></span>
+            <input id="mciLayer" type="checkbox" value="mciLayer" unchecked>
+            <label for="mciLayer" style='color:#650B0B' data-nice-name="MCI">
+                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-square-o layer-selection-icon"></i></span> 
+                MCI <span class="layer-counter"><span class="layer-counter-current">0</span>/25</span>
+                <button class="layer-unselect-all tooltip" data-tooltip="Remove Proposal from Selection" disabled = "true">
+                    <i class="fa fa-minus"></i>
                 </button>
-                <button class="layer-select-all">
-                    <span class="tooltip" data-tooltip="Add Proposal to Selection"><i class="fa fa-plus-square-o"></i></span>
+                <button class="layer-select-all tooltip" data-tooltip="Add Proposal to Selection" disabled = "true">
+                    <i class="fa fa-plus"></i>
                 </button>
             </label>
             <!-- Extra Polygons (Proposer = None) -->
-            <input id="noneLayer" type="checkbox" value="noneLayer" checked>
-            <label for="noneLayer" style='color:#0F97A3'>
-                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-check-square-o"></i></span> 
-                None 
-                <button class="layer-unselect-all">
-                    <span class="tooltip" data-tooltip="Remove Proposal from Selection"><i class="fa fa-minus-square-o"></i></span>
+            <input id="noneLayer" type="checkbox" value="noneLayer" unchecked>
+            <label for="noneLayer" style='color:#0F97A3' data-nice-name="None">
+                <span class="tooltip" data-tooltip="Toggle Visibility"><i class="fa fa-square-o layer-selection-icon"></i></span> 
+                None <span class="layer-counter"><span class="layer-counter-current">0</span>/22</span>
+                <button class="layer-unselect-all tooltip" data-tooltip="Remove Proposal from Selection" disabled = "true">
+                    <i class="fa fa-minus"></i>
                 </button>
-                <button class="layer-select-all">
-                    <span class="tooltip" data-tooltip="Add Proposal to Selection"><i class="fa fa-plus-square-o"></i></span>
+                <button class="layer-select-all tooltip" data-tooltip="Add Proposal to Selection" disabled = "true">
+                    <i class="fa fa-plus"></i>
                 </button>
             </label>
         </div>
 
         <div id='ui-controls'>
-            <button value="Zoom" id="zoom">Zoom to Selection</button>
-            <button value="Clear" id="clear">Clear all Selections</button>
+            <button value="Zoom" class="layer-ui-button" id="zoom">Zoom to selection <i class="fa fa-arrows-alt"></i></button>
+            <button value="Clear" class="layer-ui-button" id="clear">Clear selection <i class="fa fa-ban"></i></button>
         </div>
-
-
     </div>
     <!-- end right-panel -->
-
+    
     <div id='map'></div>
 
     <!-- Side panel Div   -->
@@ -199,10 +206,11 @@
         </div>
     </div>
 
-
     <!--  GeoJSON source data (var proposals_metrics)   -->
     <script src="data/efh_proposals_metrics.js"></script>
-
+    <!--  JSON with concat_id and list of unique 1km cells with corspg presence (var corspg1km_proposals)   -->
+    <script src="data/corspg1km_proposals.js"></script>
+    
     <!--  Main mapping script   -->
     <script>
         // instantiate the Leaflet map
@@ -228,7 +236,19 @@
             map.setView([41, -121.2]);
             map.setZoom(6);
         }).addTo(map);
+        
+        // Create a geoJSON layer of all polygons for search function 
+        var allpolys = L.geoJson(proposals_metrics);
+        // Globals to store the polygon names and associate boundaries
+        var poly_names = [];
+        var poly_bounds = {};
+        // Get the polygon names and associated boundaries
+        allpolys.eachLayer(function(layer){
+            poly_names.push(layer.feature.properties.SiteName);
+            poly_bounds[layer.feature.properties.SiteName] =  layer.getBounds()
+        });
 
+        
         // Create Info Box for display of feature data on hover
         drawInfo();
 
@@ -238,45 +258,43 @@
 
         // Style info for individual proposal layers
         var layerInfo = {
-                collabLayer: {
-                    proposer: "Collaborative",
-                    color: "#E5571D"
-                },
-                onoLayer: {
-                    proposer: "Oceana-NRDC-OC",
-                    color: "#6F067B"
-                },
-                fmaLayer: {
-                    proposer: "FMA",
-                    color: "#377EB8"
-                },
-                gfnmsLayer: {
-                    proposer: "GFNMS",
-                    color: "#E2007F"
-
-                },
-                greenpeaceLayer: {
-                    proposer: "Greenpeace",
-                    color: "#0F6001"
-                },
-                mbnmsLayer: {
-                    proposer: "MBNMS",
-                    color: "#E9BD02"
-                },
-                mciLayer: {
-                    proposer: "MCI",
-                    color: "#650B0B"
-                },
-                noneLayer: {
-                    proposer: "None",
-                    color: "#0F97A3",
-                },            
-            }
-            //
-
+            collabLayer: {
+                proposer: "Collaborative",
+                color: "#E5571D"
+            },
+            onoLayer: {
+                proposer: "Oceana-NRDC-OC",
+                color: "#6F067B"
+            },
+            fmaLayer: {
+                proposer: "FMA",
+                color: "#377EB8"
+            },
+            gfnmsLayer: {
+                proposer: "GFNMS",
+                color: "#E2007F"
+            },
+            greenpeaceLayer: {
+                proposer: "Greenpeace",
+                color: "#0F6001"
+            },
+            mbnmsLayer: {
+                proposer: "MBNMS",
+                color: "#E9BD02"
+            },
+            mciLayer: {
+                proposer: "MCI",
+                color: "#650B0B"
+            },
+            noneLayer: {
+                proposer: "None",
+                color: "#0F97A3",
+            },            
+        };
 
         var geoJsonLayers = {}; // global to store all the geoJSON layers
         var selectedSet = {}; // global for selected features
+        
 
         // Create individual geoJson Layers for each proposal
         for (var lyr in layerInfo) {
@@ -312,11 +330,15 @@
                         },
                     });
                 }
-            }).addTo(map);
+            })//.addTo(map);
 
             geoJsonLayers[lyr].startStyle = styles
 
         } // end of loop through all geoJSON layers
+        
+        // Add only Collaborative and Oceana layers to map to start
+        geoJsonLayers["onoLayer"].addTo(map);
+        geoJsonLayers["collabLayer"].addTo(map);
         
         // Supplemental Layer styles
         var depLineWeight = 2;
@@ -359,18 +381,37 @@
             color: "black",
             weight: 1,
             opacity: 0.8            
-        }
-        
+        }        
         var eezLnStyles = {
             color: "#7f7f7f",
             weight: 1,
             opacity: 1
-        }
-        
+        }       
         var stateStyles = {
             color: "#7f7f7f",
             weight: 1,
             opacity: 1
+        }
+        var efhcaStyles = {
+            fillColor: "#7f7f7f",
+            fillOpacity: 0.3,
+            color: "black",
+            weight: 1,
+            opacity: 1            
+        }
+        var efh700Styles = {
+            fillColor: "#7f7f7f",
+            fillOpacity: 0.3,
+            color: "black",
+            weight: 1,
+            opacity: 1            
+        }
+        var rcaStyles = {
+            fillColor: "#737300",
+            fillOpacity: 0.3,
+            color: "#343434",
+            weight: 1,
+            opacity: 1            
         }
         
         sources = {
@@ -382,7 +423,10 @@
             "dep150fm": "data/rca_150fm.geojson",
             "dep700fm": "data/efh_700fm.geojson", 
             "tribalUA_ln": "data/tribalUA_ln.geojson",
-            "state_ln": "data/state_ln.geojson"
+            "state_ln": "data/state_ln.geojson",
+            "efhca":"data/efh_consarea_py.geojson",
+            "efh700":"data/efh_700fm_py.geojson",
+            "rca":"data/RCA_TrawlGF_MarAprSepOct.geojson",    
         }
         
         styles = {
@@ -395,6 +439,9 @@
             "dep700fm": dep700Styles,
             "tribalUA_ln": tribalUAStyles,
             "state_ln": stateStyles,
+            "efhca":efhcaStyles,
+            "efh700":efh700Styles,
+            "rca":rcaStyles,
         }
        
         var data = {}; // object to hold JSON data for each layer
@@ -425,8 +472,16 @@
                 }),
                   $.getJSON(sources["tribalUA_ln"], function(d) {
                     data["tribalUA_ln"] =  d;
-                })  
-            
+                }),  
+                $.getJSON(sources["efhca"], function(d) {
+                    data["efhca"] =  d;
+                }),  
+                $.getJSON(sources["efh700"], function(d) {
+                    data["efh700"] =  d;
+                }),
+                $.getJSON(sources["rca"], function(d) {
+                    data["rca"] =  d;
+                })                
         ).then(function() {
 
             // send complete data object to another function to create layers, etc.
@@ -434,6 +489,7 @@
             
             // Draw legend with Leaflet GeoJSON layers
             drawSwitcher(layers);
+            
 
         });
         
@@ -458,6 +514,14 @@
             
             // Add specific layers to draw on initial load here, if desired
             layers["tribalUA_ln"].addTo(map);
+            
+            // Make sure EFH and RCA polygons are always on bottom
+            //  to avoid interference with Proposal selection and hover functions
+            map.on('overlayadd', function(e){
+                if (e.name.indexOf('EFH') >= 0 || e.name.indexOf('RCA') >= 0){
+                    e.layer.bringToBack();
+                } 
+            })
 
                         
         } // end drawMap()
@@ -478,6 +542,9 @@
                 "<b style='color:#8b2500'>150 fathoms</b>": layers["dep150fm"],
                 "<b style='color:#104e8b'>700 fathoms</b>": layers["dep700fm"],
                 "<b style='color:#594600'>Tribal U&A</b>": layers["tribalUA_ln"],
+                "<b style='color:#7f7f7f'>EFH Conservation Areas</b>": layers["efhca"],
+                "<b style='color:#7f7f7f'>EFH 700-fm Closure</b>": layers["efh700"],
+                "<b style='color:#737300'>Trawl RCA</b>": layers["rca"],
             }
 
             var switcher = L.control.layers(null, layerLabels, {
@@ -540,6 +607,11 @@
             // Add the feature's metrics to the polygon table
             updatePolyTable(data);
 
+            // increase layer control counter by 1 for this proposal
+            var $layerCounter = $('label[data-nice-name*="'+data.Proposer+'"]').find('.layer-counter-current');
+            var currentValue = +$layerCounter.html(); // the '+' turns it into a number
+            $layerCounter.html(currentValue + 1);
+
             // Unselect any overlapping features
             overlapping.forEach(function (layer) {
                 unselected(layer);
@@ -575,6 +647,11 @@
                 });
                 layer.bringToFront();
             }
+
+            // decrease layer control counter by 1 for this proposal
+            var $layerCounter = $('label[data-nice-name*="'+data.Proposer+'"]').find('.layer-counter-current');
+            var currentValue = +$layerCounter.html(); // the '+' turns it into a number
+            $layerCounter.html(currentValue - 1);
 
             // Remove the feature's stats from the summary statistics
             updateSummmary();
@@ -653,6 +730,8 @@
                 $('#zoom').removeClass('available');
                 $('#clear').removeClass('available');
             }
+
+            $('.layer-counter-current').html(0);
                         
             selectedSet = {};  // remove all layers from selected set
 
@@ -737,15 +816,16 @@
             html += "<br>" + "<b>Corals & Sponges</b> (1 km blocks): " + data.corspg_cnt;
             html += "<br>" + "<b>OFS 20% HSP: </b> " + pct(data.OF20AreaM2, data.SiteAreaM2);
 
-            if (data.VesCount >= 3 || data.VesCount == 0) {
-                html += "<br>" + "<b>Trawl Tow Length (mi): </b>" + m2mi(data.TowLenM);
+            // Remove all socioeconomic data for now
+//            if (data.VesCount >= 3 || data.VesCount == 0) {
+//                html += "<br>" + "<b>Trawl Tow Length (mi): </b>" + m2mi(data.TowLenM);
 //                html += "<br>" + "<b>Total Catch (MT): </b> " + rnd(data.Total_MT,1);
 //                html += "<br>" + "<b>Total Ex-Vessel Value: </b> " + dollars(data.Total_Rev);
-            } else {
-                html += "<br>" + "<b>Trawl Tow Length: </b> **";
+//            } else {
+//                html += "<br>" + "<b>Trawl Tow Length: </b> **";
 //                html += "<br>" + "<b>Total Catch (MT): </b> **";
 //                html += "<br>" + "<b>Total Ex-Vessel Value: </b> **";
-            }     
+//            }     
 
             // Assign the html content to the info box using JQuery selector
             $(".poly-info").html(html);
@@ -773,7 +853,7 @@
             $('#layer-controls input').change(function () {
 
                 var targetLayer = $(this).val();
-                var icon = $('label[for='+targetLayer+']').find('.fa');
+                var icon = $('label[for='+targetLayer+']').find('.layer-selection-icon');
                 var selBtn = $('label[for='+targetLayer+']').find('.layer-select-all');
                 var unselBtn = $('label[for='+targetLayer+']').find('.layer-unselect-all');
                 if (this.checked) {
@@ -781,11 +861,12 @@
                     map.addLayer(geoJsonLayers[targetLayer]);
                     // enable select and unselect all buttons
                     selBtn.prop('disabled', false);
+                    unselBtn.prop('disabled', false);
                 } else {
                     icon.removeClass('fa-check-square-o').addClass('fa-square-o');
                     map.removeLayer(geoJsonLayers[targetLayer]);
                     // disable select and unselect all buttons
-                    selBtn.prop('disabled', true);                      
+                    selBtn.prop('disabled', true);
                     unselBtn.prop('disabled', true);  
                 }
 
@@ -793,29 +874,33 @@
             
             // Select all polygons from a Proposal, regardless of current state
             $('.layer-select-all').on('click', function () {
+                loading(true);
                 var targetLayer = $(this).parent().attr('for');
-                
-                geoJsonLayers[targetLayer].eachLayer(function(f){
-                    var id = f.feature.properties.concat_id;
-                    // Only add features that are not already selected
-                    if (! (selectedSet.hasOwnProperty(id)) ){
-                        selected(f); 
-                    }
-                                                     
-                });
-                               
+                setTimeout(function() {
+                    geoJsonLayers[targetLayer].eachLayer(function(f){
+                        var id = f.feature.properties.concat_id;
+                        // Only add features that are not already selected
+                        if (! (selectedSet.hasOwnProperty(id)) ){
+                            selected(f); 
+                        }                      
+                    });
+                    loading(false);
+                }, 1);
             });
             
             
             // Remove all polygons from a Proposal
             $('.layer-unselect-all').on('click', function () {
-                var targetLayer = $(this).parent().attr('for');
-                               
-                geoJsonLayers[targetLayer].eachLayer(function(f){
-                   unselected(f); 
-                                                     
-                });
-                               
+                var $parent = $(this).parent();
+                var targetLayer = $parent.attr('for');
+                loading(true);
+                setTimeout(function() {
+                    geoJsonLayers[targetLayer].eachLayer(function(f){
+                        unselected(f);                     
+                    });
+                    $parent.find('.layer-counter-current').html(0); // hard set the current layer counter to 0
+                    loading(false);
+                }, 1);
             });
             
 
@@ -836,7 +921,40 @@
                     // Show content from selected tab
                 $('#'.concat(id)).show();
             });
+            
+            
+            // constructs the polygon search suggestion engine
+            var sites = new Bloodhound({
+              datumTokenizer: Bloodhound.tokenizers.whitespace,
+              queryTokenizer: Bloodhound.tokenizers.whitespace,
+              // array of EFH polygon names
+              local: poly_names
+            });
+
+            $('#poly-search .typeahead').typeahead({
+              hint: true,
+              highlight: true,
+              minLength: 1
+            },
+            {
+              name: 'efhpoly',
+              source: sites,
+              limit: 10
+            });
+            
+            // Return the selected value from the polygon search box
+            
+            $('#poly-search .typeahead').bind('typeahead:select', function(ev, suggestion) {
+                zoom2Name(suggestion);
+            });
+            
+            
         }  // end buildUI{}
+        
+        // Zoom to a polygon by name
+        function zoom2Name(sitename) {
+            map.fitBounds(poly_bounds[sitename])
+        }
 
         // Convert sq meters to square miles and format nicely
         function sqm2sqmi(val) {
@@ -912,11 +1030,11 @@
                 '<tr><td>Canyons & Gullies</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
                 '<tr><td>Seamounts</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
                 '<tr><td>Corals & Sponges (1 km blocks)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
-                '<tr><td>OFS 20% HSP (sq mi) </td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
-                '<tr class="table-row-header"><th>Socioeconomic Metrics</th>' + '<th>Displace</th>' + '<th>Restore</th>' + '<th>Net</th></tr>' +
-                '<tr><th>Trawl Effort</th>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
-                '<tr><td>Total Tow Length (mi)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
-                '<tr><td>Percent of Coastwide Tow Length</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>';
+                '<tr><td>OFS 20% HSP (sq mi) </td>' + '<td></td>' + '<td></td>' + '<td></td></tr>';
+//                '<tr class="table-row-header"><th>Socioeconomic Metrics</th>' + '<th>Displace</th>' + '<th>Restore</th>' + '<th>Net</th></tr>' +
+//                '<tr><th>Trawl Effort</th>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+//                '<tr><td>Total Tow Length (mi)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+//                '<tr><td>Percent of Coastwide Tow Length</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
 //                '<tr><th>Total Catch (Metric Tons)</th>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
 //                '<tr><td>Flatfish (MT)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
 //                '<tr><td>Rockfish (MT)</td>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
@@ -949,20 +1067,20 @@
                 "SmtAreaM2",
                 "corspg_cnt",
                 "OF20AreaM2",
-                "TowLenM",
-                "PropLenTot",
-                "Total_MT",
-                "Flatfish_MT",
-                "Rockfish_MT",
-                "Roundfish_MT",
-                "SharkSkate_MT",
-                "Other_MT",
-                "Total_Rev",
-                "Flatfish_Rev",
-                "Rockfish_Rev",
-                "Roundfish_Rev",
-                "SharkSkate_Rev",
-                "Other_Rev",               
+//                "TowLenM",
+//                "PropLenTot",
+//                "Total_MT",
+//                "Flatfish_MT",
+//                "Rockfish_MT",
+//                "Roundfish_MT",
+//                "SharkSkate_MT",
+//                "Other_MT",
+//                "Total_Rev",
+//                "Flatfish_Rev",
+//                "Rockfish_Rev",
+//                "Roundfish_Rev",
+//                "SharkSkate_Rev",
+//                "Other_Rev",               
             ]
 
 
@@ -979,20 +1097,20 @@
                 SmtAreaM2: 0,
                 corspg_cnt: 0,
                 OF20AreaM2: 0,
-                TowLenM: 0,
-                PropLenTot: 0,
-                Total_MT: 0,
-                Flatfish_MT: 0,
-                Rockfish_MT: 0,
-                Roundfish_MT: 0,
-                SharkSkate_MT: 0,
-                Other_MT: 0,
-                Total_Rev: 0,
-                Flatfish_Rev: 0,
-                Rockfish_Rev: 0,
-                Roundfish_Rev: 0,
-                SharkSkate_Rev: 0,
-                Other_Rev: 0    
+//                TowLenM: 0,
+//                PropLenTot: 0,
+//                Total_MT: 0,
+//                Flatfish_MT: 0,
+//                Rockfish_MT: 0,
+//                Roundfish_MT: 0,
+//                SharkSkate_MT: 0,
+//                Other_MT: 0,
+//                Total_Rev: 0,
+//                Flatfish_Rev: 0,
+//                Rockfish_Rev: 0,
+//                Roundfish_Rev: 0,
+//                SharkSkate_Rev: 0,
+//                Other_Rev: 0    
             };
             var summClose = {
                 SiteAreaM2: 0,
@@ -1004,20 +1122,20 @@
                 SmtAreaM2: 0,
                 corspg_cnt: 0,
                 OF20AreaM2: 0,
-                TowLenM: 0,
-                PropLenTot: 0,
-                Total_MT: 0,
-                Flatfish_MT: 0,
-                Rockfish_MT: 0,
-                Roundfish_MT: 0,
-                SharkSkate_MT: 0,
-                Other_MT: 0,
-                Total_Rev: 0,
-                Flatfish_Rev: 0,
-                Rockfish_Rev: 0,
-                Roundfish_Rev: 0,
-                SharkSkate_Rev: 0,
-                Other_Rev: 0    
+//                TowLenM: 0,
+//                PropLenTot: 0,
+//                Total_MT: 0,
+//                Flatfish_MT: 0,
+//                Rockfish_MT: 0,
+//                Roundfish_MT: 0,
+//                SharkSkate_MT: 0,
+//                Other_MT: 0,
+//                Total_Rev: 0,
+//                Flatfish_Rev: 0,
+//                Rockfish_Rev: 0,
+//                Roundfish_Rev: 0,
+//                SharkSkate_Rev: 0,
+//                Other_Rev: 0    
             };
 
             // loop through all the selected features
@@ -1043,16 +1161,14 @@
                             } else { // areas to be reopened
                                 summOpen[att] += props[att];
                             }
-
                         }
                     }
                 }
+                
 
             } // end of loop through selectedSet
-
-            // create Net value object
-            summNet = calcNet(summClose, summOpen);
-
+            
+            
             // Update area count text
             var polyCount = Object.keys(selectedSet).length;
 
@@ -1117,15 +1233,15 @@
                 '<td>' + calcNet(summClose.corspg_cnt, summOpen.corspg_cnt) + '</td></tr>' +
                 '<tr><td>OFS 20% HSP (sq mi) </td>' + '<td>' + sqm2sqmi(summClose.OF20AreaM2) + '</td>' +
                 '<td>' + sqm2sqmi(summOpen.OF20AreaM2, areaOpen) + '</td>' +
-                '<td>' + sqm2sqmi(calcNet(summClose.OF20AreaM2, summOpen.OF20AreaM2), areaNet) + '</td></tr>' +
-                '<tr class="table-row-header"><th>Socioeconomic Metrics</th><th>Displace</th><th>Restore</th><th>Net</th></tr>' +
-                '<tr><th>Trawl Effort</th>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
-                '<tr><td>Total Tow Length (mi)</td>' + '<td>' + m2mi(summClose.TowLenM) + '</td>' +
-                '<td>' + m2mi(summOpen.TowLenM) + '</td>' +
-                '<td>' + m2mi(calcNet( summOpen.TowLenM, summClose.TowLenM)) + '</td></tr>' +   
-                '<tr><td>Percent of Coastwide Tow Length</td>' + '<td>' + prop2pct(summClose.PropLenTot) + '</td>' +
-                '<td>' + prop2pct(summOpen.PropLenTot) + '</td>' +
-                '<td>' + prop2pct(calcNet(summOpen.PropLenTot, summClose.PropLenTot)) + '</td></tr>';
+                '<td>' + sqm2sqmi(calcNet(summClose.OF20AreaM2, summOpen.OF20AreaM2), areaNet) + '</td></tr>';
+//                '<tr class="table-row-header"><th>Socioeconomic Metrics</th><th>Displace</th><th>Restore</th><th>Net</th></tr>' +
+//                '<tr><th>Trawl Effort</th>' + '<td></td>' + '<td></td>' + '<td></td></tr>' +
+//                '<tr><td>Total Tow Length (mi)</td>' + '<td>' + m2mi(summClose.TowLenM) + '</td>' +
+//                '<td>' + m2mi(summOpen.TowLenM) + '</td>' +
+//                '<td>' + m2mi(calcNet( summOpen.TowLenM, summClose.TowLenM)) + '</td></tr>' +   
+//                '<tr><td>Percent of Coastwide Tow Length</td>' + '<td>' + prop2pct(summClose.PropLenTot) + '</td>' +
+//                '<td>' + prop2pct(summOpen.PropLenTot) + '</td>' +
+//                '<td>' + prop2pct(calcNet(summOpen.PropLenTot, summClose.PropLenTot)) + '</td></tr>' + 
 //                '<tr><th>Total Catch (Metric Tons)</th>' + '<td>' + rnd(summClose.Total_MT, 1) + '</td>' + 
 //                '<td>' + rnd(summOpen.Total_MT, 1) + '</td>' + 
 //                '<td>' + rnd(calcNet(summClose.Total_MT,summOpen.Total_MT), 1) + '</td></tr>' +
@@ -1199,8 +1315,8 @@
                 '<th>Seamounts (sq mi)</th>' +
                 '<th>Corals & Sponges (1 km blocks)</th>' +
                 '<th>OFS 20% HSP (sq mi)</th>' +
-                '<th>Trawl Tow Length (mi)</th>' +
-                '<th>Percent Coastwide Tow Length</th>' +
+//                '<th>Trawl Tow Length (mi)</th>' +
+//                '<th>Percent Coastwide Tow Length</th>' +
 //                '<th>Total Catch (MT)</th>' +
 //                '<th>Flatfish Catch (MT)</th>' +
 //                '<th>Rockfish Catch (MT)</th>' +
@@ -1243,8 +1359,8 @@
                 '<th>Seamounts (sq mi)</th>' +
                 '<th>Corals & Sponges (1 km blocks)</th>' +
                 '<th>OFS 20% HSP (sq mi)</th>' +
-                '<th>Trawl Tow Length (mi)</th>' +                
-                '<th>Percent Coastwide Tow Length</th>' +
+//                '<th>Trawl Tow Length (mi)</th>' +                
+//                '<th>Percent Coastwide Tow Length</th>' +
 //                '<th>Total Catch (MT)</th>' +
 //                '<th>Flatfish Catch (MT)</th>' +
 //                '<th>Rockfish Catch (MT)</th>' +
@@ -1288,10 +1404,12 @@
                     '<td>' + sqm2sqmi(data.SmtAreaM2) + '</td>' +
                     '<td>' + data.corspg_cnt + '</td>' +
                     '<td>' + sqm2sqmi(data.OF20AreaM2) + '</td>'                
-                
-                if (data.VesCount >= 3 || data.VesCount == 0) {
-                    rows += '<td>' + m2mi(data.TowLenM) + '</td>' +
-                        '<td>' + prop2pct(data.PropLenTot) + '</td>'
+ 
+                // Remove all socioeconomic data for now
+
+//                if (data.VesCount >= 3 || data.VesCount == 0) {
+//                    rows += '<td>' + m2mi(data.TowLenM) + '</td>' +
+//                    '<td>' + prop2pct(data.PropLenTot) + '</td>' +
 //                    '<td>' + rnd(data.Total_MT, 1) + '</td>' +
 //                    '<td>' + rnd(data.Flatfish_MT, 1) + '</td>' +
 //                    '<td>' + rnd(data.Rockfish_MT, 1) + '</td>' +
@@ -1304,9 +1422,9 @@
 //                    '<td>' + dollars(data.Roundfish_Rev) + '</td>' +
 //                    '<td>' + dollars(data.SharkSkate_Rev) + '</td>' +
 //                    '<td>' + dollars(data.Other_Rev) + '</td>'
-                } else {
-                    rows += '<td>' + '**' + '</td>' +
-                    '<td>' + '**' + '</td>'
+//                } else {
+//                    rows += '<td>' + '**' + '</td>' +
+//                    '<td>' + '**' + '</td>' +
 //                    '<td>' + '**' + '</td>' +
 //                    '<td>' + '**' + '</td>' +
 //                    '<td>' + '**' + '</td>' +
@@ -1319,9 +1437,8 @@
 //                    '<td>' + '**' + '</td>' +
 //                    '<td>' + '**' + '</td>' +
 //                    '<td>' + '**' + '</td>'
-               }
-                
-                
+//               }
+                               
                 rows += '</tr>'
 //            });
             } // end of loop through selectedSet
@@ -1334,6 +1451,12 @@
 
 
         } // end of updatePolyTable()
+
+        // adds or removes a loader icon at the top-right of the page
+        function loading(boolean) {
+            if (boolean) $('html').addClass('loading');
+            else $('html').removeClass('loading');
+        }
 
         (function () {
 
